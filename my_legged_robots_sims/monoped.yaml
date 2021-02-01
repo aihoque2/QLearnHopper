@@ -1,0 +1,26 @@
+#.yaml config file
+
+
+monoped:
+  # all the different joint states
+  # creates the /joint_states topic needed in ROS
+
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 1000
+
+  # Effort controllers
+  haa_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: haa_joint
+    pid: {p: 10.0, i: 0.0, d: 0.5}
+
+  hfe_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: hfe_joint
+    pid: {p: 10.0, i: 0.0, d: 0.5}
+
+  kfe_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: kfe_joint
+    pid: {p: 10.0, i: 0.0, d: 0.5}
