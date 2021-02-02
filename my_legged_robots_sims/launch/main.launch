@@ -15,6 +15,7 @@
         <env name="GAZEBO_MODEL_PATH" value="$(find my_legged_robots_sims)/models:$(optenv GAZEBO_MODEL_PATH)"/>
     </include>
 
-
+    <include file="$(find my_legged_robots_sims)/launch/spawn_monoped.launch"/>
+    <include file="$(find my_legged_robots_sims)/launch/monoped_control.launch"/>
 </launch>
 
