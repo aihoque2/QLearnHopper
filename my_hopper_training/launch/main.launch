@@ -1,0 +1,4 @@
+<launch>
+    <rosparam command="load" file="$(find my_hopper_training)/config/qlearn_params.yaml" />
+    <node pkg="my_hopper_training" name="monoped_gym" type="start_training_v2.py" output="screen" />
+</launch>

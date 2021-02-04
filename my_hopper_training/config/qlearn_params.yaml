@@ -1,0 +1,31 @@
+#qlearn params
+alpha: 0.1 #learning rate hyperparameter
+gamma: 0.8 #discount rate hyperparameter
+epsilon: 0.9 #exploration hyperparameter
+epsilon_discount: 0.999
+nepisodes: 100000
+nsteps: 1000
+
+
+#environment parameters
+desired_pose:
+ x: 0.0
+ y: 0.0
+ z: 1.0
+
+desired_force: 7.08 #newtons
+desired_yaw: 0.0 #keep the robot standing tall
+max_height: 3.0 #in meters
+min_height: 0.5 #meters
+max_incline: 1.57 #radians
+running_step: 0.001
+joint_increment_value: 0.05 #radians
+
+done_reward: -1000.0 #reward if the hopper falls down
+alive_reward: 100.0 #reward if hopper's still standing
+
+weight_r1: 1.0 #weight for joint positions
+weight_r2: 0.0 #weight for joint effort (no efforts is perfect)
+weight_r3: 1.0 #weight for contact force similar to weight of monoped (newton's 3rd law)
+weight_r4: 1.0 #weight for orientation
+weight_r5: 1.0 #weight for distance from desired point
