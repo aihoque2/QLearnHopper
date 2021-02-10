@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-
 import gym
 import time
-import numpy
+import numpy as np
 import random
 import qlearn
 from gym import wrappers
@@ -32,4 +31,19 @@ if __name__ == '__main__':
 
 
     #logging system
-     
+    rospack = rospkg.RosPack()
+    pkg_path = rospack.get_path('my_hopper_training')
+    outdir = pkg_path + '/training_results'
+    env = wrappers.monitor(env, outdir, force=True)
+    rospy.logdebug("Monitor Wrapper started")
+
+    last_time_steps = np.ndarry(0)
+
+
+    # load our paramters from the yaml
+    alpha = rospy.get_param("/alpha")
+    epsilon = rospy.get_param("/epsilon")
+    gamma = rospy.get_param("/gamma")
+    epsilon_discount = rospy.get_param("/epsilon_discount")
+    nepisodes = rospy.get_param("/nepisodes")
+    nsteps = rospy.get_param("/nsteps")
