@@ -21,7 +21,7 @@ max_incline: 1.57 #radians
 running_step: 0.001
 joint_increment_value: 0.05 #radians
 
-done_reward: -1000.0 #reward if the hopper falls down
+done_reward: -10000.0 #reward if the hopper falls down
 alive_reward: 100.0 #reward if hopper's still standing
 
 weight_r1: 1.0 #weight for joint positions

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import rospy
 from std_msgs.msg import String
@@ -50,5 +50,5 @@ class JointPub(object):
 if __name__ == '__main__':
     rospy.init_node('joint_publisher_node')
     joint_publisher = JointPub()
-    rate_value = 4.0 #4 cycles a second
+    rate_value = 2.0
     joint_publisher.start_loop(rate_value)
