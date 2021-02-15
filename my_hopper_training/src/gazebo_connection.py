@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-"""TODO: FIRST TASK IS THIS ONE"""
 
 import rospy
 from std_srvs.srv import Empty
