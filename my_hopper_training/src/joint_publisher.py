@@ -126,5 +126,5 @@ class JointPub(object):
 if __name__ == '__main__':
     rospy.init_node('joint_publisher_node')
     joint_publisher = JointPub()
-    rate_value = 50.0 #4 cycles a second
+    rate_value = 50.0 #50 cycles a second
     joint_publisher.start_sinus_loop(rate_value)
