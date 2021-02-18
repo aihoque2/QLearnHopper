@@ -52,7 +52,7 @@ class GazeboConnection():
     def resetWorld(self):
         try:
             rospy.wait_for_service('/gazebo/reset_world')
-        except: rospy.ServiceException, e:
+        except rospy.ServiceException, e:
             print("gazebo resetWorld() failed to call")
     
     def init_values(self):

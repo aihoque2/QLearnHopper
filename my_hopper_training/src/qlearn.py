@@ -24,7 +24,7 @@ class QLearn:
         max(Q(s', a)) maxes Q for the action"""
 
         Q_old = self.q.get((state, action), None) #TODO: try to return 0.0 instead of None and see what happens
-        if (Q_old = None):
+        if (Q_old == None):
             self.q[(state, action)] = reward
         else:
             self.q[(state, action)] = oldv + self.aplha * (Q_local-oldv)

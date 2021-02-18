@@ -10,7 +10,7 @@ import qlearn
 from gym import wrappers
 
 #ROS packages
-from std_msgs import Float64
+from std_msgs.msg import Float64
 import rospy
 import rospkg
 

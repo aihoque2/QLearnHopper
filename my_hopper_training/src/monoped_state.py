@@ -122,7 +122,7 @@ class MonopedState(object):
             return euler.rpy()
 
         def get_distance_from_point(self, some_point):
-            """given Vector3() somePoint, calculate distance from it""""
+            """given Vector3() somePoint, calculate distance from it"""
 
             a = np.array((self.base_position.x, self.base_position.y, self.base_position.z)) #we pass in a tuple because it is ordered
             b = np.array((some_point.x, some_point.y, some_point.z))
