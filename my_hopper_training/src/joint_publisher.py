@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
+"""TODO: INCOMPLETE"""
 
 import rospy
+import math
 from std_msgs.msg import String
 from std_msgs.msg import Float64
 
@@ -18,7 +20,9 @@ class JointPub(object):
         self.publishers_array.append(self.haa_joint_pub)
         self.publishers_array.append(self.hfe_joint_pub)
         self.publishers_array.append(self.kfe_joint_pub)
-    
+
+        self.init_pos = [0.0, 0.0, 0.0]
+
     def move_joints(self, joints_array):
         i = 0
         for publisher_object in self.publishers_array:

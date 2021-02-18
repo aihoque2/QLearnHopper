@@ -136,70 +136,304 @@ class MonopedState(object):
             return force_magnitude
         
         def get_joint_states(self):
+            return self.joints_state
 
         
         def odom_callback(self):
+            self.base_position = msg.pose.pose.position
         
         
         def imu_callback(self):
+            self.base_orientation = msg.orientation
+            self.base_linear_acceleration = msg.base_linear_acceleration
 
 
         def contact_callback(self):
+            """
+            /lowerleg_contactsensor_state/states[0]/contact_positions ==> PointContact in World
+            /lowerleg_contactsensor_state/states[0]/contact_normals ==> NormalContact in World
+
+            ==> One is an array of all the forces, the other total,
+            and are relative to the contact link referred to in the sensor.
+            /lowerleg_contactsensor_state/states[0]/wrenches[]
+            /lowerleg_contactsensor_state/states[0]/total_wrench
+            :param msg:
+            :return:
+            """
+
+            for state in msg.states:
+                self.contact_force = state.total_wrench.force
 
 
         def joints_state_callback(self):
-
+            self.joints_state = msg
         
         def monoped_height_ok(self):
+            height_ok = self.min_height <= self.get_base.height() < self.max_height
+            return height_ok
 
         
         def monoped_orientation_ok(self):
+            orientation_rpy = self.get_base_rpy()
+            roll_ok = self.abs_max_roll > abs(orientation_rpy.x)
+            pitch_ok = self.abs_max_pitch > abs(orientation_rpy.y)
+            orientation_ok = roll_ok and pitch_ok
+            return orientation_ok
 
-        
         def calculate_reward_joint_position(self, weight=1.0):
+            accumulated_joint_pos = 0.0
+            for joint_pos in self.joints_state.position:
+                accumulated_joint_pos += abs(joint_pos)
+                rospy.logdebug("calculate reward_joint_position >> accumulated_joint_pos" + str(accumulated_joint_pos))
+            reward = weight * accumulated_joint_pos
+            rospy.logdebug("calculate_reward_joint_position>>reward=" + str(reward))
+            return reward        
 
-        
         def calculate_reward_joint_effort(self, weight=1.0):
-
+            """
+            We calculate reward base on the joints effort readings. The more near 0 the better.
+            :return:
+            """
+            accumulated_joint_effort = 0.0
+            for joint_effort in self.joints_state.effort:
+                accumulated_joint_effort +=abs(joint_effort)
+                rospy.logdebug("calculate_reward_joint_effort>>joint_effort=" + str(joint_effort))
+                rospy.logdebug("calculate_reward_joint_effort>>acumulated_joint_effort=" + str(acumulated_joint_effort))
+            reward = weight * accumulated_joint_effort
+            rospy.logdebug("calculate_reward_joint_effort>>reward=" + str(reward))
+            return reward
 
         def calculate_reward_contact_force(self, weight=1.0):
+            """
+            calculate reward based on contact force.
+            closer we are to the desired force the better
+            desired force: 7.08 Newtons
+            """
 
-        
+            force_magnitude = self.get_contact_force_magnitude()
+            force_displacement = force_magnitude - self.desired_force
+
+            rospy.logdebug("calculate_reward_contact_force>>force_magnitude=" + str(force_magnitude))
+            rospy.logdebug("calculate_reward_contact_force>>force_displacement=" + str(force_displacement))
+
+            reward = weight * abs(force_displacement)
+            rospy.logdebug("calculate_reward_contact_force>>reward=" + str(reward))
+            return reward
+
         def calculate_reward_orientation(self, weight=1.0):
-
+            current_orientation = self.get_base_rpy()
+            yaw_displacement = current_orientation.z - self.desired_yaw
+            rospy.logdebug("calculate reward oriantation>>[R,P,Y]=" str(current_orientation))
+            accumulated_orientation_displacement = abs(current_orientation.x) + abs(current_orientation.y) + abs(yaw_displacement)
+            reward = weight * accumulated_orientation_displacement
+            rospy.logdebug("calculate_reward_orientation>>reward=" + str(reward))
+            return reward
 
         def calculate_reward_distance_from_des_point(self, weight=1.0):
-
+            distance = self.get_distance_from_point(self.starting_point)
+            reward = weight * distance
+            rospy.logdebug("calculate_reward_orientation>>reward=" + str(reward))
 
         def calculate_total_reward(self):
 
+            r1 = self.calculate_reward_joint_position(self.weight_r1)
+            r2 = self.calculate_reward_joint_effort(self.weight_r2)
+
+            #desired force in newtons, taken from idel contact with 9.81 gracity
+            r3 = self.calculate_reward_contact_force(self.weight_r3)
+            r4 = self.calculate_reward_orientation(self.weight_r4)
+            r5 = self.calculate_reward_distance_from_des_point(self.weight_r5)
+            total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5
+
+            rospy.logdebug("###############")
+            rospy.logdebug("alive_bonus=" + str(self._alive_reward))
+            rospy.logdebug("r1 joint_position=" + str(r1))
+            rospy.logdebug("r2 joint_effort=" + str(r2))
+            rospy.logdebug("r3 contact_force=" + str(r3))
+            rospy.logdebug("r4 orientation=" + str(r4))
+            rospy.logdebug("r5 distance=" + str(r5))
+            rospy.logdebug("total_reward=" + str(total_reward))
+            rospy.logdebug("###############")
+
+            return total_reward
+
 
         def get_observations(self):
+            distance_from_desired_point = self.get_distance_from_point(self.starting_point)
 
+            base_orientation = self.get_base_rpy()
+            base_roll = base_orientation.x
+            base_pitch = base_orientation.y
+            base_yaw = base_orientation.z
 
-        def get_state_as_string(self):
+            contact_force = self.get_contact_force_magnitude()
 
+            joint_states = self.get_joint_states()
+            joint_states_haa = joint_states.position[0]
+            joint_states_hfe = joint_states.position[1]
+            joint_states_kfe = joint_states.position[2]
+
+            observation = []
+            for obs_name in self._list_of_observations:
+                if obs_name == "distance_from_desired_point":
+                    observation.append(distance_from_desired_point)
+                elif obs_name == "base_roll":
+                    observation.append(base_roll)
+                elif obs_name == "base_pitch":
+                    observation.append(base_pitch)
+                elif obs_name == "base_yaw":
+                    observation.append(base_yaw)
+                elif obs_name == "contact_force":
+                    observation.append(contact_force)
+                elif obs_name == "joint_states_haa":
+                    observation.append(joint_states_haa)
+                elif obs_name == "joint_states_hfe":
+                    observation.append(joint_states_hfe)
+                elif obs_name == "joint_states_kfe":
+                    observation.append(joint_states_kfe)
+                else:
+                    raise NameError('Observation Asked does not exist=='+str(obs_name))
+
+            return observation
+
+        def get_state_as_string(self, observation):
+            """discretize the observations and 
+            convert them to state tags strings"""
+
+            observations_discrete = self.assign_bins(observation)
+            string_state = ''.join(map(str, observations_discrete))
+            return string_state
 
         def assign_bins(self, observation):
-
-
+            state_discrete = np.zeros(len(self.list_of_observations))
+            for i in range(len(self.list_of_observations)):
+                state_discrete[i] = np.digitize(observation[i], self.bins[i])
+            return state_discrete
+    
         def init_bins(self):
+            self.fill_observation_ranges()
+            self.create_bins()
 
         
         def fill_observation_ranges(self):
+            self.obs_range_dict = {}
+            for obs_name in self.list_of_observations:
 
+                if obs_name == "distance_from_desired_point":
+
+                    delta = self.max_height - self.min_height
+                    max_value = delta
+                    min_value = -delta
+                
+                elif obs_name == "base_roll":
+                    max_value = self.abs_max_roll
+                    min_value = -self.abs_max_roll
+                
+                elif obs_name == "base_pitch":
+                    max_value = self.abs_max_pitch
+                    min_value = -self.abs_max_pitch
+                
+                elif obs_name == "base_yaw":
+                    max_value = 2 * math.pi
+                    min_value = -2 * math.pi
+
+                elif obs_name == "contact_force":
+                    max_value = 2 * self.desired_force
+                    min_value = 0.0
+
+                elif obs_name == "joint_states_haa":
+                    max_value = 1.6
+                    min_value = -1.6
+                
+                elif obs_name == "joint_states_hfe":
+                    max_value = 1.6
+                    min_value = -1.6
+
+                elif obs_name == "joint_states_kfe":
+                    max_value = 0.0
+                    min_value = -1.6
+                
+                else:
+                    raise NameError("observation does not exist" + str(obs_name))
+                
+                self.obs_range_dict[obs_name] = [min_value, max_value]  
 
         def create_bins(self):
+            number_of_observations = len(self.list_of_observations)
+            parts_we_discretize = self.discrete_division
+
+            self.bins = numpy.zeros((number_of_observations, parts_we_disrcetize))
+            for counter in range(number_of_observations):
+                obs_name = self.list_of_observations[counter]
+                min_value = self.obs_range_dict[obs_name][0]
+                max_value = self.obs_range_dict[obs_name][1]
+                self.bins[counter] = np.linspace(min_value, max_value, parts_we_discretize)
+            
 
 
         def get_action_to_position(self, action):
+            joint_states = self.get_joint_states()
+            joint_states_position = joint)staes.
+            
+            action_position = [0.0, 0.0, 0.0]
+            rospy.logdebug("get_action_to_position>>>"+str(joint_states_position))
+
+            if action == 0: #haa_joint 
+                action_position[0] = joint_states_position[0] + self.joint_increment_value
+                action_position[1] = joint_states_position[1]
+                action_position[2] = joint_states_position[2]
+
+            elif action == 1: #haa_joint
+                action_position[0] = joint_states_position[0] - self.joint_increment_value
+                action_position[1] = joint_states_position[1]
+                action_position[2] = joint_states_position[2]
+            
+            elif action == 2: #hfe_joint
+                action_position[0] = joint_states_position[0]
+                action_position[1] = joint_states_position[1] + self.joint_increment_value
+                action_position[2] = joint_states_position[2]
+            
+            elif action == 3: #hfe_joint
+                action_position[0] = joint_states_position[0]
+                action_position[1] = joint_states_position[1] - self.joint_increment_value
+                action_position[2] = joint_states_position[2]
+            
+            elif action == 4: #kfe_joint
+                action_position[0] = joint_states_position[0]
+                action_position[1] = joint_states_position[1]
+                action_position[2] = joint_states_position[2] + self.joint_increment_value
+            
+            elif action == 5: #kfe joint
+                action_position[0] = joint_states_position[0]
+                action_position[1] = joint_states_position[1]
+                action_position[2] = joint_states_position[2] - self.joint_increment_value
+
+            return action_position
 
         
         def process_data(self):
+            """
+            return the total reward based on state we're in and wether the robot is done or not (i.e. if it fell)
+            """
+            monoped_height_ok = self.monoped_height_ok()
+            monoped_orientation_ok = self.monoped_orientation_ok()
 
+            done = not(monoped_height_ok and monoped_orientation_ok)
+
+            if done:
+                rospy.logdebug("it fell, so reward is low")
+                total_reward = self.done_reward
+            else:
+                rospy.logdebug("calculate normal reward because it didn't fall")
+                total_reward = self.calculate_total_reward()
+            
+            return total_reward, done
 
         def testing_loop(self):
-
+            rate = rospy.Rate(50)
+            while not rospy.is_shutdown:
+                self.calculate_total_reward
+                rate.sleep()
 
 if __name__ == "__main__":
     rospy.init_node("monoped_state_node", anonymous=True)
