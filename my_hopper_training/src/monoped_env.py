@@ -15,7 +15,7 @@ from controllers_connection import ControllersConnection
 reg = register(
     id='Monoped-v0',
     entry_point = 'monoped_env::MonopedEnv',
-    timestep_limit = 50,
+    max_episode_steps = 50,
 )
 
 class MonopedEnv(gym.Env): #MonopedEnv has a parent class of the gym.env
@@ -82,7 +82,7 @@ class MonopedEnv(gym.Env): #MonopedEnv has a parent class of the gym.env
 
     def _seed(self, seed=None): #random generator for picking an action
         self.np_random, seed = np.seeding.np_random(seed)
-        return[seed]
+        return [seed]
 
     def _reset(self):
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 import rospy
-from gazebo_msgs import ContactState
+from gazebo_msgs.msg import ContactsState
 from sensor_msgs.msg import Imu
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Quaternion, Vector3
-from sensor_msgs import JointState
+from sensor_msgs.msg import JointState
 import tf #transformations, not TensorFlow
 import numpy as np
 import math
@@ -223,7 +223,7 @@ class MonopedState(object):
         def calculate_reward_orientation(self, weight=1.0):
             current_orientation = self.get_base_rpy()
             yaw_displacement = current_orientation.z - self.desired_yaw
-            rospy.logdebug("calculate reward oriantation>>[R,P,Y]=" str(current_orientation))
+            rospy.logdebug("calculate reward oriantation>>[R,P,Y]=" + str(current_orientation))
             accumulated_orientation_displacement = abs(current_orientation.x) + abs(current_orientation.y) + abs(yaw_displacement)
             reward = weight * accumulated_orientation_displacement
             rospy.logdebug("calculate_reward_orientation>>reward=" + str(reward))
@@ -373,7 +373,7 @@ class MonopedState(object):
 
         def get_action_to_position(self, action):
             joint_states = self.get_joint_states()
-            joint_states_position = joint)staes.
+            joint_states_position = joint_states
             
             action_position = [0.0, 0.0, 0.0]
             rospy.logdebug("get_action_to_position>>>"+str(joint_states_position))
@@ -440,7 +440,7 @@ if __name__ == "__main__":
     
     monoped_state = MonopedState(max_height=3.0,
                                 min_height=0.6,
-                                abs_max_roll=0.7
+                                abs_max_roll=0.7,
                                 abs_max_pitch=0.7)
     
     monoped_state.testing_loop()
