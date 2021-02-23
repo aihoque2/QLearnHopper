@@ -16,6 +16,7 @@ import rospkg
 
 #training environment
 import monoped_env
+from monoped_env import MonopedEnv
 
 if __name__ == '__main__':
     
