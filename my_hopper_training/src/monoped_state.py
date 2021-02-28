@@ -119,7 +119,7 @@ class MonopedState(object):
         euler_rpy.x = euler[0]
         euler_rpy.y = euler[1]
         euler_rpy.z = euler[2]
-        return euler.rpy()
+        return euler_rpy
 
     def get_distance_from_point(self, some_point):
         """given Vector3() somePoint, calculate distance from it"""
@@ -165,11 +165,11 @@ class MonopedState(object):
             self.contact_force = state.total_wrench.force
 
 
-    def joints_state_callback(self):
+    def joints_state_callback(self, msg):
         self.joints_state = msg
     
     def monoped_height_ok(self):
-        height_ok = self.min_height <= self.get_base.height() < self.max_height
+        height_ok = self.min_height <= self.get_base_height() < self.max_height
         return height_ok
 
     
@@ -274,7 +274,7 @@ class MonopedState(object):
         joint_states_kfe = joint_states.position[2]
 
         observation = []
-        for obs_name in self._list_of_observations:
+        for obs_name in self.list_of_observations:
             if obs_name == "distance_from_desired_point":
                 observation.append(distance_from_desired_point)
             elif obs_name == "base_roll":

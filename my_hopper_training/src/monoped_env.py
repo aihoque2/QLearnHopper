@@ -151,5 +151,9 @@ class MonopedEnv(gym.Env): #MonopedEnv has a parent class of the gym.env
         Helper for _step
         retrieve discretized version of the given state (or observation)
         """
-
         return self.monoped_state_object.get_state_as_string(observation)
+
+    def _render(self, mode='human', close=False):
+        reward, done = self.monoped_state_object.process_data()
+        print("here's the reward: ")
+        print(reward)
