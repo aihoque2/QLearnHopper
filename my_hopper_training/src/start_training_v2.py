@@ -23,7 +23,7 @@ if __name__ == '__main__':
     rospy.init_node('monoped_gym', anonymous=True, log_level=rospy.INFO)
 
     #create gym env
-    env = gym.make('Monoped-v0')
+    env = MonopedEnv()
     rospy.logdebug("Gym env created")
 
     #we create a publisher that tells the robot the reward it receives for an action at a state

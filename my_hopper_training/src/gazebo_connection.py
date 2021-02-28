@@ -92,7 +92,7 @@ class GazeboConnection():
         then we activate the gravity and see the result of the actions we did"""
         self.pauseSim()
 
-        set_physics_request = SetPhysicsProperties
+        set_physics_request = SetPhysicsPropertiesRequest()
         set_physics_request.time_step = self.time_step.data
         set_physics_request.max_update_rate = self.max_update_rate.data
         set_physics_request.gravity = self.gravity
@@ -100,7 +100,7 @@ class GazeboConnection():
 
         rospy.logdebug(str(set_physics_request.gravity))
         result = self.set_physics(set_physics_request)
-        rospy.logdebug("Gravity update result==" + str(result.success) + ", message =="+ str(results.status_message))
+        rospy.logdebug("Gravity update result==" + str(result.success) + ", message =="+ str(result.status_message))
         
         self.unPauseSim()
 

@@ -38,9 +38,9 @@ class MonopedEnv(gym.Env): #MonopedEnv has a parent class of the gym.env
         self.desired_yaw = rospy.get_param("/desired_yaw")
         self.max_height = rospy.get_param("/max_height")
         self.min_height = rospy.get_param("/min_height")
-        self.max_incl = rospy.get_param("/max_incl")
+        self.max_incl = rospy.get_param("/max_incline")
         self.running_step = rospy.get_param("/running_step")
-        self.joint_increment_value = rospy.get_param("/joint_incement_value")
+        self.joint_increment_value = rospy.get_param("/joint_increment_value")
         
         #our reward values
         self.done_reward = rospy.get_param("/done_reward")
