@@ -14,7 +14,7 @@ from controllers_connection import ControllersConnection
 #register training environment in gym 
 reg = register(
     id='Monoped-v0',
-    entry_point = 'monoped_env::MonopedEnv',
+    entry_point = 'monoped_env:MonopedEnv',
     max_episode_steps = 50,
 )
 
