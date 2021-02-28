@@ -51,6 +51,7 @@ if __name__ == '__main__':
     nepisodes = rospy.get_param("/nepisodes")
     nsteps = rospy.get_param("/nsteps")
 
+    ##TODO: CHECK Qlearn
     qlearn = qlearn.QLearn(actions=range(env.action_space.n), alpha=alpha, gamma=gamma, epsilon=epsilon)
     initial_epsilon = qlearn.epsilon
 

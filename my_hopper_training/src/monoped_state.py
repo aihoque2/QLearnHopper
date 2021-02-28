@@ -13,7 +13,7 @@ import math
 
 class MonopedState(object):
 
-    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10):
+    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=100.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10):
         
         rospy.logdebug("Starting MonopedState object...")
         self.starting_point = Vector3(0.0, 0.0, 0.0)
@@ -139,16 +139,16 @@ class MonopedState(object):
         return self.joints_state
 
     
-    def odom_callback(self):
+    def odom_callback(self, msg):
         self.base_position = msg.pose.pose.position
     
     
-    def imu_callback(self):
+    def imu_callback(self, msg):
         self.base_orientation = msg.orientation
-        self.base_linear_acceleration = msg.base_linear_acceleration
+        self.base_linear_acceleration = msg.linear_acceleration
 
 
-    def contact_callback(self):
+    def contact_callback(self, msg):
         """
         /lowerleg_contactsensor_state/states[0]/contact_positions ==> PointContact in World
         /lowerleg_contactsensor_state/states[0]/contact_normals ==> NormalContact in World
@@ -198,7 +198,7 @@ class MonopedState(object):
         for joint_effort in self.joints_state.effort:
             accumulated_joint_effort +=abs(joint_effort)
             rospy.logdebug("calculate_reward_joint_effort>>joint_effort=" + str(joint_effort))
-            rospy.logdebug("calculate_reward_joint_effort>>acumulated_joint_effort=" + str(acumulated_joint_effort))
+            rospy.logdebug("calculate_reward_joint_effort>>acumulated_joint_effort=" + str(accumulated_joint_effort))
         reward = weight * accumulated_joint_effort
         rospy.logdebug("calculate_reward_joint_effort>>reward=" + str(reward))
         return reward
@@ -233,6 +233,7 @@ class MonopedState(object):
         distance = self.get_distance_from_point(self.starting_point)
         reward = weight * distance
         rospy.logdebug("calculate_reward_orientation>>reward=" + str(reward))
+        return reward
 
     def calculate_total_reward(self):
 
@@ -243,10 +244,19 @@ class MonopedState(object):
         r3 = self.calculate_reward_contact_force(self.weight_r3)
         r4 = self.calculate_reward_orientation(self.weight_r4)
         r5 = self.calculate_reward_distance_from_des_point(self.weight_r5)
-        total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5
+        
+        print("alive_reward_type: ", type(self.alive_reward))
+        print("r1 type: ", type(r1))
+        print("r2 type: ", type(r2))
+        print("r3 type: ", type(r3))
+        print("r4 type: ", type(r4))
+        print("r5 type: ", type(r5))
+
+
+        total_reward = self.alive_reward - r1 - r2 - r3 - r4 - r5
 
         rospy.logdebug("###############")
-        rospy.logdebug("alive_bonus=" + str(self._alive_reward))
+        rospy.logdebug("alive_bonus=" + str(self.alive_reward))
         rospy.logdebug("r1 joint_position=" + str(r1))
         rospy.logdebug("r2 joint_effort=" + str(r2))
         rospy.logdebug("r3 contact_force=" + str(r3))

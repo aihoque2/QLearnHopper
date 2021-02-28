@@ -136,6 +136,9 @@ class MonopedEnv(gym.Env): #MonopedEnv has a parent class of the gym.env
         self.gazebo.unPauseSim()
         self.monoped_joint_publisher_object.move_joints(next_action_position)
 
+        time.sleep(self.running_step)
+        self.gazebo.pauseSim()
+
         #send it to the robot
         observation = self.monoped_state_object.get_observations()
 
