@@ -64,7 +64,7 @@ class MonopedEnv(gym.Env): #MonopedEnv has a parent class of the gym.env
                                                     desired_yaw=self.desired_yaw, weight_r1 = self.weight_r1, weight_r2 = self.weight_r2,
                                                     weight_r3 = self.weight_r3, weight_r4 = self.weight_r4, weight_r5 = self.weight_r5)
         
-        self.monoped_state_object.set_starting_pont(self.desired_pose.position.x, self.desired_pose.position.y, self.desired_pose.position.z)
+        self.monoped_state_object.set_starting_point(self.desired_pose.position.x, self.desired_pose.position.y, self.desired_pose.position.z)
 
         self.monoped_joint_publisher_object = JointPub()
 
@@ -81,7 +81,7 @@ class MonopedEnv(gym.Env): #MonopedEnv has a parent class of the gym.env
         self._seed()
 
     def _seed(self, seed=None): #random generator for picking an action
-        self.np_random, seed = np.seeding.np_random(seed)
+        self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
     def _reset(self):
