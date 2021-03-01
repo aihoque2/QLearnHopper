@@ -23,11 +23,11 @@ class QLearn:
         where Q_local = (R(s) + gamma * max(Q(s',a))),
         max(Q(s', a)) maxes Q for the action"""
 
-        Q_old = self.q.get((state, action), 0.0) #TODO: try to return 0.0 instead of None and see what happens
-        if (Q_old == None):
+        Q_old = self.q.get((state, action), None) #TODO: try to return 0.0 instead of None and see what happens
+        if (Q_old is None):
             self.q[(state, action)] = reward
         else:
-            self.q[(state, action)] = oldv + self.aplha * (Q_local-oldv)
+            self.q[(state, action)] = Q_old + self.aplha * (Q_local-Q_old)
 
     def chooseAction(self, state, return_q = False):
         q = [self.getQ(state, a) for a in self.actions]
@@ -36,7 +36,7 @@ class QLearn:
         if (random.random < self.epsilon): #this is to see if we wish to exploit another action 
             minQ = min(q)
             mag = max(abs(minQ), abs(maxQ))
-            q = [(q[i] + random.random() * mag - 0.5*mag) for i in range (0, len(actions))]
+            q = [(q[i] + random.random() * mag - 0.5*mag) for i in range(0, len(self.actions))]
             maxQ = max(q)
         
         count = q.count(maxQ) #see how many max Q values we ahve
@@ -50,7 +50,7 @@ class QLearn:
 
         best_action = self.actions[i] 
         if (return_q): #use this to show the best action and q-val
-            return best_action, q, state
+            return best_action, q
 
         return best_action
 
