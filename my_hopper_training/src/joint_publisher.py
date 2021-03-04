@@ -98,16 +98,14 @@ class JointPub(object):
         rospy.logdebug("Start Loop")
         w = 0.0
         x = 2.0*math.sin(w)
-        #pos_x = [0.0,0.0,x]
-        #pos_x = [x, 0.0, 0.0]
+       
         pos_x = [0.0, x, 0.0]
         rate = rospy.Rate(rate_value)
         while not rospy.is_shutdown():
             self.move_joints(pos_x)
             w += 0.05
             x = 2.0 * math.sin(w)
-            #pos_x = [0.0, 0.0, x]
-            #pos_x = [x, 0.0, 0.0]
+           
             pos_x = [0.0, x, 0.0]
             rate.sleep()
 
