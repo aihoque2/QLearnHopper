@@ -31,6 +31,6 @@ to launch the Qlearning:
 `roslaunch my_hopper_training main.launch`
 
 
-Here is the node graph (or rqt_graph):
+## Here is the node graph (or rqt_graph):
 
 <img src="https://github.com/aihoque2/IlliniHopper/blob/main/pics/node_and_topic_graph.png">
