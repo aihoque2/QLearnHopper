@@ -9,6 +9,7 @@ I used the monoped robot from ETH Zurich's xpp package and tried to teach it to
 hop with by using Q-learning. The algorithm did not converge, but the result was
 quite interesting:
 
+![Alt Text](https://media4.giphy.com/media/lIsgQpeQiUnZ7GnSNP/giphy.gif)
 
 
 
