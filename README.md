@@ -22,7 +22,9 @@ to run please use the following commands:
 `catkin_make`
 
 to launch the monoped:
+
 `roslaunch my_legged_robots_sims main.launch`
 
 to launch the Qlearning:
+
 `roslaunch my_hopper_training main.launch`
