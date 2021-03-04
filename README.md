@@ -33,4 +33,4 @@ to launch the Qlearning:
 
 Here is the node graph with the topics and subscribers:
 
-<img src="https://github.com/aihoque2/IlliniHopper/blob/main/pics/node_and_topic_graph.png" width="473" height="412">
+<img src="https://github.com/aihoque2/IlliniHopper/blob/main/pics/node_and_topic_graph.png">
