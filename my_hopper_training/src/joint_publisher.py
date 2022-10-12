@@ -2,6 +2,7 @@
 
 import rospy
 import math
+from typing import List
 from std_msgs.msg import String
 from std_msgs.msg import Float64
 
@@ -68,7 +69,7 @@ class JointPub(object):
 
         self.move_joints(msg.joint_state.position)
 
-    def move_joints(self, joints_array):
+    def move_joints(self, joints_array: List[float]):
 
         i = 0
         for publisher_object in self.publishers_array:
