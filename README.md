@@ -1,6 +1,6 @@
-# IlliniHopper
+# Hopper
 
-Behold my IlliniHopper! Hail to the orange, Hail to the blue...
+Behold my Hopper!
 
 Following the constructsim tutorial, I decided to create my own monoped robot 
 in order to teach myself more about ROS and using OpenAI in a Gazebo Environment
